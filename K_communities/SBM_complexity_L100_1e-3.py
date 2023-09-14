@@ -54,7 +54,7 @@ def Noisy_PM_K2(A,W,L,T1,T2,n,w1_t,w2_t):
             q = np.matmul(W,q) 
         # Normalization
         w2 = w2 / np.sqrt(n*q)
-        lambda2 = eigen_sign * np.sqrt(n*q)
+        lambda2 =  np.sqrt(n*q)
     lambda_mat = np.hstack((lambda1.reshape(-1,1),lambda2.reshape(-1,1)))
 
     return w1,w2,lambda_mat
@@ -89,7 +89,7 @@ def Compute_next_eigenvector(U,A,W,L,T,w_k,lambda_mat):
             q = np.matmul(W,q) 
         # Normalization
         w_k = w_k / np.sqrt(n*q)
-        lambdak = eigen_sign * np.sqrt(n*q)
+        lambdak =  np.sqrt(n*q)
       
     V = np.hstack((U,w_k.reshape(-1,1)))
     lambda_new = np.hstack((lambda_mat,lambdak.reshape(-1,1)))
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     
     total_num_clusters = 5
     the_num_eigevectors = 5
-    seed = total_num_clusters
+    seed = total_num_clusters*1
     np.random.seed(seed)
 
     # set parameters
@@ -137,20 +137,22 @@ if __name__ == '__main__':
     print(n1,n2,n3,n4,n5)
     
     # grid-search on the number of power iterations
-    T1 = range(30,20,-1)
-    T2 = range(42,40,-1)
-    T3 = range(36,34,-1)
-    T4 = range(28,26,-1)
-    T5 = range(26,24,-1)
-    # T1 = range(36,18,-2)
-    # T2 = range(42,40,-2)
-    # T3 = range(36,34,-2)
-    # T4 = range(28,26,-2)
-    # T5 = range(26,24,-2)
-    
+    # T1 = range(56,52,-1)
+    # T2 = range(52,48,-1)
+    # T3 = range(56,55,-1)
+    # T4 = range(36,35,-1)
+    # T5 = range(28,26,-1)
+    T1 = range(25,20,-1)
+    T2 = range(42,41,-1)
+    T3 = range(36,35,-1)
+    T4 = range(28,27,-1)
+    T5 = range(26,25,-1)
+    # 25	42	36	28	26
     # load the adjacency matrix and the label
-    adj = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_adj.npy")
-    gt = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_gt.npy")
+    # adj = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_adj.npy")
+    # gt = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_gt.npy")
+    adj = np.load("./numpy_array/SBM/SBMa15b0_5_adj.npy")
+    gt = np.load("./numpy_array/SBM/SBMa15b0_5_gt.npy")
     num_nodes = adj.shape[0]
     
     # sort eigenvalues

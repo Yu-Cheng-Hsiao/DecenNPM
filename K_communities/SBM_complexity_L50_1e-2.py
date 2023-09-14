@@ -54,7 +54,7 @@ def Noisy_PM_K2(A,W,L,T1,T2,n,w1_t,w2_t):
             q = np.matmul(W,q) 
         # Normalization
         w2 = w2 / np.sqrt(n*q)
-        lambda2 = eigen_sign * np.sqrt(n*q)
+        lambda2 =  np.sqrt(n*q)
     lambda_mat = np.hstack((lambda1.reshape(-1,1),lambda2.reshape(-1,1)))
 
     return w1,w2,lambda_mat
@@ -89,7 +89,7 @@ def Compute_next_eigenvector(U,A,W,L,T,w_k,lambda_mat):
             q = np.matmul(W,q) 
         # Normalization
         w_k = w_k / np.sqrt(n*q)
-        lambdak = eigen_sign * np.sqrt(n*q)
+        lambdak =  np.sqrt(n*q)
       
     V = np.hstack((U,w_k.reshape(-1,1)))
     lambda_new = np.hstack((lambda_mat,lambdak.reshape(-1,1)))
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     
     total_num_clusters = 5
     the_num_eigevectors = 5
-    seed = total_num_clusters
+    seed = total_num_clusters*1
     np.random.seed(seed)
 
     # set parameters
@@ -142,16 +142,18 @@ if __name__ == '__main__':
     # T3 = range(6,4,-1)
     # T4 = range(10,8,-1)
     # T5 = range(12,10,-1)
-    T1 = range(50,5,-2)
-    T2 = range(50,10,-2)
-    T3 = range(50,4,-2)
-    T4 = range(50,8,-2)
-    T5 = range(50,10,-2)
+    T1 = range(100,5,-2)
+    T2 = range(100,10,-2)
+    T3 = range(100,4,-2)
+    T4 = range(100,8,-2)
+    T5 = range(100,10,-2)
     # cannot achieve the dired error even the T1,T2,T3,T4,T5 are large.
 
     # load the adjacency matrix and the label
-    adj = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_adj.npy")
-    gt = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_gt.npy")
+    # adj = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_adj.npy")
+    # gt = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_gt.npy")
+    adj = np.load("./numpy_array/SBM/SBMa15b0_5_adj.npy")
+    gt = np.load("./numpy_array/SBM/SBMa15b0_5_gt.npy")
     num_nodes = adj.shape[0]
     
     # sort eigenvalues

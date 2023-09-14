@@ -20,7 +20,7 @@ parent = os.path.dirname(current)
 # adding the parent directory to the sys.path.
 sys.path.append(parent)
 
-from load_datasets import karate_club,dolphins,football,polbooks
+from load_datasets import karate_club,dolphins,football,polbooks,football_localfile
 from utils import eign_computing,SSBM,plot_heatmap,OrderedLabelEncoder,plot_heatmap_triangle,Kempe_2004_KT, construct_DS_matrix
 
 def check_sign(w2_pre,w2):
@@ -144,12 +144,6 @@ def Myalgo(adj_mat:np.array,T_list:list,L,V_init,U_gt, total_num_clusters,epsilo
     error = np.linalg.norm(np.matmul(U,U.T)-np.matmul(U_gt[:,:num_clusters],U_gt[:,:num_clusters].T))
     return error
 
-def find_outlier(data:np.array):
-    average = data.mean()
-    index = np.argmax(np.abs(data-average))
-    outlier = data[index]
-    
-    return average, outlier,index
 
 def plot_eigenvalues(centralized, average, outlier,total_num_clusters,name,num_nodes,T,L,save_path):
     labels  = [r"$\lambda_1$",r"$\lambda_2$",r"$\lambda_3$",r"$\lambda_4$",r"$\lambda_5$",r"$\lambda_6$",
@@ -186,33 +180,39 @@ def compute_communiction_complexity(T_list):
 if __name__ == '__main__':
     
     total_num_clusters = 11
-    average = []
-    outlier = []
-    np.random.seed(total_num_clusters)
-    # T = 100
-    # L = 20
+    seed = total_num_clusters*1              
+    np.random.seed(seed)
+    print("seed:",seed)
 
-    adj , gt = football(False)
+
+    # adj , gt = football(False)
+    adj , gt = football_localfile(False)
+    # print(gt)
     num_nodes = adj.shape[0]
+    print("Number of nodes", num_nodes)
     eigenValues, eigenVectors = eign_computing(adj,name="football")
-    # print(np.linalg.norm(eigenVectors[:,:2],2))
-    # print(np.linalg.norm(eigenVectors[:,:5],2))
-    
-    # print(np.linalg.norm(eigenVectors,2))
-    # print(np.linalg.norm(eigenVectors,'fro'))
-    # assert False
-    # print(eigenValues)
+
     eigenValues_sorted = sorted(eigenValues, key=abs,reverse=True)
-    # print(eigenValues)
+    # print("Values",eigenValues)
     sort_index = sorted(range(len(eigenValues)), key=lambda k: np.abs(eigenValues[k]),reverse=True)
-    # print(sort_index)
+    # print("index",sort_index)
     eigenVectors_sorted = eigenVectors[:,sort_index]
     # print(eigenVectors_sorted[:,total_num_clusters])
     # assert False
     W = construct_DS_matrix(num_nodes=num_nodes,adj_mat = adj)
+    # print(W.shape)
+    V_init = np.random.normal(0, np.sqrt(1/num_nodes), size=(num_nodes,total_num_clusters))
+    np.save("./numpy_array/football/initial_vector"+ str(seed) ,V_init)
+    # print(V_init.shape)
+    # assert False
+    V_init = np.load("./numpy_array/football/initial_vector" + str(seed) + ".npy")
     
-    V_init = np.random.normal(0, 1/num_nodes, size=(num_nodes,total_num_clusters))
-    # V_init = np.load("./numpy_array/initial_vector.npy")
+
+    U_gt = eigenVectors_sorted[:,:total_num_clusters]
+    # print(np.linalg.norm(np.matmul(U_gt,U_gt.T)-np.matmul(V_init,V_init.T)))
+    for i in range(total_num_clusters):
+        print(i," ",np.sum(V_init[:,i]*U_gt[:,i])/np.linalg.norm(V_init[:,i]),np.linalg.norm(V_init[:,i]),np.linalg.norm(U_gt[:,i]))
+
     L_set =[40,60,80]
     epsilon_list = [1e-1,1e-2,1e-3]
     
@@ -224,45 +224,3 @@ if __name__ == '__main__':
                 print("epsilon:",epsilon,"L:",item, "The number of power iterations:", num_PI)
                 print("Complexity:", total_num_clusters**2*num_PI)
                 print("error:", est_error)
-    # assert False
-    # num_L = 40
-    # epsilon = 1e-1
-    # best_complexity = 1e+10
-    # min_error = 1
-    
-    # T1 = T2 = T3 = range(50,40,-2)
-    # T4 = T5 = range(46,30,-2)
-    # T6 = T7 = range(36,30,-2)
-    # T8 = T9 = range(36,30,-2)
-    # T10 = T11 = range(30,28,-2)
-    
-    # for T_list in product(T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11):
-    #     tic = time.time()
-    #     # item: tuple
-    #     # print(T_list)
-    #     error = Myalgo(adj_mat=adj,T_list = T_list,L = num_L,V_init = V_init, U_gt =eigenVectors[:,:total_num_clusters], 
-    #                    total_num_clusters=total_num_clusters,epsilon = epsilon)
-    #     complexity = compute_communiction_complexity(T_list)
-    #     # print("Complexity:",complexity)
-    #     # print("Error:",error)
-    #     # print("time",time.time()-tic)
-    #     if error < epsilon:
-    #         if complexity < best_complexity:
-    #             best_complexity  = complexity
-    #             best_combination = T_list
-    #     if min_error > error:
-    #         min_error = error
-    #         min_combination = T_list
-    #         min_complexity = complexity
-            
-    #     print("best:",best_complexity)
-    #     print("min_error:", min_error)
-    #     print("min:",min_complexity)
-        
-    # print("best:",best_complexity)
-    
-    # print("best_combination:",best_combination)
-    
-    # print("min_error:", min_error)
-    # print("min:",min_complexity)
-    # print("min_combination:",min_combination)

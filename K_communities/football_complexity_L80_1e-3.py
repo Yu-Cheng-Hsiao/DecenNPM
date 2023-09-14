@@ -67,7 +67,7 @@ def Noisy_PM_K2(A,W,L,T1,T2,n,w1_t,w2_t):
             q = np.matmul(W,q) 
         # Normalization
         w2 = w2 / np.sqrt(n*q)
-        lambda2 = eigen_sign * np.sqrt(n*q)
+        lambda2 = np.sqrt(n*q)
  
     lambda_mat = np.hstack((lambda1.reshape(-1,1),lambda2.reshape(-1,1)))
 
@@ -104,7 +104,7 @@ def Compute_next_eigenvector(U,A,W,L,T,w_k,lambda_mat):
             q = np.matmul(W,q) 
         # Normalization
         w_k = w_k / np.sqrt(n*q)
-        lambdak = eigen_sign * np.sqrt(n*q)
+        lambdak = np.sqrt(n*q)
       
     V = np.hstack((U,w_k.reshape(-1,1)))
     lambda_new = np.hstack((lambda_mat,lambdak.reshape(-1,1)))
@@ -180,11 +180,9 @@ def plot_eigenvalues(centralized, average, outlier,total_num_clusters,name,num_n
 if __name__ == '__main__':
     
     total_num_clusters = 11
-    average = []
-    outlier = []
-    np.random.seed(total_num_clusters)
-    # T = 100
-    # L = 20
+    seed = total_num_clusters*1
+    np.random.seed(seed)
+    print("seed:",seed)
 
     adj , gt = football(False)
     num_nodes = adj.shape[0]
@@ -199,7 +197,9 @@ if __name__ == '__main__':
     # assert False
     W = construct_DS_matrix(num_nodes=num_nodes,adj_mat = adj)
     
-    V_init = np.random.normal(0, 1/num_nodes, size=(num_nodes,total_num_clusters))
+    # V_init = np.random.normal(0, 1/num_nodes, size=(num_nodes,total_num_clusters))
+    # np.save("./numpy_array/initial_vector",V_init)
+    V_init = np.load("./numpy_array/football/initial_vector" + str(seed) + ".npy")
     # print(V_init.shape)
     L_set =[40,60,80,100]
     epsilon_list = [1e-1,1e-2,1e-3]
@@ -219,16 +219,27 @@ if __name__ == '__main__':
     min_error = 1
     
     T1 = range(52,48,-1)
-    T2 = range(116,110,-2)
-    T3 = range(156,155,-1)
-    T4 = range(148,144,-2)
-    T5 = range(144,142,-2)
-    T6 = range(175,173,-2)
-    T7 = range(120,118,-2)
-    T8 = range(99,98,-1)
-    T9 = range(82,80,-2)
-    T10 = range(48,46,-2)
-    T11 = range(50,48,-2)
+    T2 = range(116,114,-1)
+    T3 = range(156,154,-1)
+    T4 = range(148,147,-1)
+    T5 = range(144,143,-1)
+    T6 = range(175,174,-1)
+    T7 = range(120,119,-1)
+    T8 = range(97,96,-1)
+    T9 = range(82,81,-1)
+    T10 = range(48,47,-1)
+    T11 = range(50,49,-1)
+    # T1 = range(51,49,-1)
+    # T2 = range(120,119,-1)
+    # T3 = range(158,157,-1)
+    # T4 = range(152,151,-1)
+    # T5 = range(152,151,-1)
+    # T6 = range(180,179,-1)
+    # T7 = range(138,137,-1)
+    # T8 = range(88,86,-1)
+    # T9 = range(82,80,-1)
+    # T10 = range(49,47,-1)
+    # T11 = range(49,47,-1)
 
     # T1 = range(162,150,-2)
     # T2 = range(162,150,-2)

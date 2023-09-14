@@ -149,9 +149,9 @@ if __name__ == '__main__':
     
     total_num_clusters = 5
     the_num_eigevectors = 5
-    seed = total_num_clusters
+    seed = total_num_clusters*1
     np.random.seed(seed)
-          
+    print("seed:",seed)
     n1 = 35
     n2 = 30
     n3 = 25
@@ -175,11 +175,27 @@ if __name__ == '__main__':
     
     # V_init = np.random.normal(0, 1/num_nodes, size=(num_nodes,the_num_eigevectors))
     # np.save("./numpy_array/SBM/initial_vector"+ str(seed) ,V_init)
+    # assert False
     V_init = np.load("./numpy_array/SBM/initial_vector" + str(seed) + ".npy")
-    # print(V_init.shape)
+    
+    U_gt = eigenVectors_sorted[:,:the_num_eigevectors]
+    # print(np.linalg.norm(np.matmul(U_gt,U_gt.T)-np.matmul(V_init,V_init.T)))
+    # for i in range(the_num_eigevectors):
+    #     print(np.sum(V_init[:,i]*U_gt[:,i])/np.linalg.norm(V_init[:,i]))
+    # assert False
     L_set =[50,75,100]
     epsilon_list = [1e-1,1e-2,1e-3]
     
+    ## test
+    unit_vector = (V_init[:,1]/np.linalg.norm(V_init[:,1])).reshape(-1,1)
+    unit_vector = eigenVectors_sorted[:,3].reshape(-1,1)
+    print(unit_vector)
+    print(unit_vector.shape)
+    value1 = np.matmul(np.matmul(unit_vector.T,adj),unit_vector)
+    value2 = np.sqrt(np.matmul(np.matmul(unit_vector.T,np.matmul(adj.T,adj)),unit_vector))
+    print(value1)
+    print(value2)
+    assert False
     # Kempe
     for item in L_set:
         # print(item)

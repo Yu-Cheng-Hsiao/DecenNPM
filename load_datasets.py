@@ -71,6 +71,47 @@ def karate_club(isplot=False,isKmeans = False):
     
     return adj_mat, gt
     
+def football_localfile(isplot):
+    # url = "http://www-personal.umich.edu/~mejn/netdata/football.zip"
+    # sock = urllib.request.urlopen(url)  # open URL
+    # s = io.BytesIO(sock.read())  # read into BytesIO "file"
+    # sock.close()
+
+    # zf = zipfile.ZipFile(s)  # zipfile object
+    # txt = zf.read("football.txt").decode()  # read info file
+    # gml = zf.read("football.gml").decode()  # read gml data
+    # # throw away bogus first line with # from mejn files
+    # gml = gml.split("\n")[1:]
+    # G = nx.parse_gml(gml)  # parse gml data
+    url = "/home/yucheng/community_detection/dec_structured/dataset/gml/football.gml"
+    G = nx.read_gml(url,label="id")  
+    gt = []
+    for node_id, node_attributes in G.nodes(data=True):
+        # print(node_id, node_attributes)
+        # print(type(node_attributes.values()))
+        label = str(node_attributes["value"])
+        gt.append(int(label))
+    
+    # print("football",gt)
+    # assert False
+    options = {"node_size": 200, "linewidths": 0, "width": 0.5,"with_labels": False}
+    
+    pos = nx.spring_layout(G, seed=800)  # Seed for reproducible layout
+    # pos = nx.spectral_layout(G)
+    if isplot:
+        plt.figure()
+        nx.draw(G, pos, node_color=gt, **options)
+        plt.title("football network")
+        # plt.legend()                          # 0509 should make legends based on the color ...
+        plt.savefig("./dataset/football.jpg", dpi=300)
+
+    # construct the adjacency matrix
+    adj = nx.adjacency_matrix(G)
+    adj_football = adj.todense()
+    adj_football[adj_football!=0] = 1
+
+    return adj_football, gt
+
 def football(isplot):
     url = "http://www-personal.umich.edu/~mejn/netdata/football.zip"
     sock = urllib.request.urlopen(url)  # open URL
@@ -91,7 +132,7 @@ def football(isplot):
         label = str(node_attributes["value"])
         gt.append(int(label))
 
-    # print("football",gt)
+    print("football",gt)
     options = {"node_size": 200, "linewidths": 0, "width": 0.5,"with_labels": False}
     
     pos = nx.spring_layout(G, seed=800)  # Seed for reproducible layout

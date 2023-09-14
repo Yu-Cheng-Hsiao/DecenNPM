@@ -383,7 +383,8 @@ def Kempe_2004_KT(A,L,n,V:np.array,W,epsilon,U_gt):
             R[:,:,index] = R[:,:,index].T
             V[index,:] = np.matmul(V[index,:],np.linalg.inv(R[:,:,index]))
     
-        if t >=500:
+        if t >=2000:
+            print(np.linalg.norm(np.matmul(V,V.T)-np.matmul(U_gt,U_gt.T)))
             est_error = False
             break
         else:

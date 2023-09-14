@@ -3,6 +3,8 @@ import time
 import sys
 from itertools import product
 import os
+import math
+import scipy
 
 # getting the name of the directory where the this file is present.
 current = os.path.dirname(os.path.realpath(__file__))
@@ -54,7 +56,7 @@ def Noisy_PM_K2(A,W,L,T1,T2,n,w1_t,w2_t):
             q = np.matmul(W,q) 
         # Normalization
         w2 = w2 / np.sqrt(n*q)
-        lambda2 = eigen_sign * np.sqrt(n*q)
+        lambda2 = np.sqrt(n*q)
     lambda_mat = np.hstack((lambda1.reshape(-1,1),lambda2.reshape(-1,1)))
 
     return w1,w2,lambda_mat
@@ -89,7 +91,7 @@ def Compute_next_eigenvector(U,A,W,L,T,w_k,lambda_mat):
             q = np.matmul(W,q) 
         # Normalization
         w_k = w_k / np.sqrt(n*q)
-        lambdak = eigen_sign * np.sqrt(n*q)
+        lambdak = np.sqrt(n*q)
       
     V = np.hstack((U,w_k.reshape(-1,1)))
     lambda_new = np.hstack((lambda_mat,lambdak.reshape(-1,1)))
@@ -123,7 +125,7 @@ if __name__ == '__main__':
     
     total_num_clusters = 5
     the_num_eigevectors = 5
-    seed = total_num_clusters
+    seed = total_num_clusters*1
     np.random.seed(seed)
 
     # set parameters
@@ -137,15 +139,22 @@ if __name__ == '__main__':
     print(n1,n2,n3,n4,n5)
     
     # grid-search on the number of power iterations
+    # T1 = range(15,10,-1)
+    # T2 = range(14,8,-1)
+    # T3 = range(10,8,-1)
+    # T4 = range(10,7,-1)
+    # T5 = range(9,7,-1)
     T1 = range(9,7,-1)
-    T2 = range(12,11,-1)
-    T3 = range(6,5,-1)
-    T4 = range(10,9,-1)
-    T5 = range(11,10,-1)
-    
+    T2 = range(12,10,-1)
+    T3 = range(7,4,-1)
+    T4 = range(10,8,-1)
+    T5 = range(12,10,-1)
+
     # load the adjacency matrix and the label
-    adj = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_adj.npy")
-    gt = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_gt.npy")
+    # adj = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_adj.npy")
+    # gt = np.load("./numpy_array/SBM/SBMa15b0_"+str(seed)+"_gt.npy")
+    adj = np.load("./numpy_array/SBM/SBMa15b0_5_adj.npy")
+    gt = np.load("./numpy_array/SBM/SBMa15b0_5_gt.npy")
     num_nodes = adj.shape[0]
     
     # sort eigenvalues
@@ -157,6 +166,20 @@ if __name__ == '__main__':
     W = construct_DS_matrix(num_nodes=num_nodes,adj_mat = adj)      # construct doubly-stochastic matrix
     V_init = np.load("./numpy_array/SBM/initial_vector" + str(seed) + ".npy")   # load initial vectors
 
+    print(np.abs(np.matmul(V_init[:,1],eigenVectors[:,1])/np.linalg.norm(V_init[:,1])/np.linalg.norm(eigenVectors[:,1])))
+    print(180/math.pi*np.emath.arccos(np.matmul(V_init[:,1],eigenVectors[:,1])/np.linalg.norm(V_init[:,1])/np.linalg.norm(eigenVectors[:,1])))
+    # print("2",np.matmul(V_init[:,1],eigenVectors[:,1]))
+    # print("3",np.matmul(V_init[:,2],eigenVectors[:,2]))
+    for i in range(5):
+        print(i,np.abs(np.matmul(V_init[:,i],eigenVectors[:,i])/np.linalg.norm(V_init[:,i])/np.linalg.norm(eigenVectors[:,i])))
+    print()
+    test = np.matmul(V_init[:,0:5].T,eigenVectors[:,0:5])
+    print(test)
+    U, S, Vh = np.linalg.svd(test)
+    print(S)
+    print(np.rad2deg(scipy.linalg.subspace_angles(V_init,eigenVectors[:,:5])))
+    print(np.cos(scipy.linalg.subspace_angles(V_init,eigenVectors[:,:5])))
+    assert False
     best_complexity = 1e+10
     min_error = 1
     for T_list in product(T1,T2,T3,T4,T5):

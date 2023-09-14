@@ -67,7 +67,7 @@ def Noisy_PM_K2(A,W,L,T1,T2,n,w1_t,w2_t):
             q = np.matmul(W,q) 
         # Normalization
         w2 = w2 / np.sqrt(n*q)
-        lambda2 = eigen_sign * np.sqrt(n*q)
+        lambda2 = np.sqrt(n*q)
  
     lambda_mat = np.hstack((lambda1.reshape(-1,1),lambda2.reshape(-1,1)))
 
@@ -104,7 +104,7 @@ def Compute_next_eigenvector(U,A,W,L,T,w_k,lambda_mat):
             q = np.matmul(W,q) 
         # Normalization
         w_k = w_k / np.sqrt(n*q)
-        lambdak = eigen_sign * np.sqrt(n*q)
+        lambdak = np.sqrt(n*q)
       
     V = np.hstack((U,w_k.reshape(-1,1)))
     lambda_new = np.hstack((lambda_mat,lambdak.reshape(-1,1)))
@@ -180,11 +180,9 @@ def plot_eigenvalues(centralized, average, outlier,total_num_clusters,name,num_n
 if __name__ == '__main__':
     
     total_num_clusters = 11
-    average = []
-    outlier = []
-    np.random.seed(total_num_clusters)
-    # T = 100
-    # L = 20
+    seed = total_num_clusters*1
+    np.random.seed(seed)
+    print("seed:",seed)
 
     adj , gt = football(False)
     num_nodes = adj.shape[0]
@@ -201,7 +199,7 @@ if __name__ == '__main__':
     
     # V_init = np.random.normal(0, 1/num_nodes, size=(num_nodes,total_num_clusters))
     # np.save("./numpy_array/initial_vector",V_init)
-    V_init = np.load("./numpy_array/initial_vector.npy")
+    V_init = np.load("./numpy_array/football/initial_vector" + str(seed) + ".npy")
     # print(V_init.shape)
     L_set =[40,60,80,100]
     epsilon_list = [1e-1,1e-2,1e-3]
@@ -240,8 +238,8 @@ if __name__ == '__main__':
     # T1 = range(40,24,-1)
     # 
 
-    T1 = range(40,32,-1)
-    T2 = range(36,35,-1)
+    T1 = range(26,22,-1)
+    T2 = range(35,33,-1)
     T3 = range(29,28,-1)
     T4 = range(19,18,-1)
     T5 = range(20,19,-1)
@@ -249,9 +247,9 @@ if __name__ == '__main__':
     T7 = range(14,13,-1)
     T8 = range(20,19,-1)
     T9 = range(20,19,-1)
-    T10 = range(18,16,-1)
-    T11 = range(22,20,-1)
-    
+    T10 = range(19,17,-1)
+    T11 = range(22,21,-1)
+    # 33	36	29	19	20	14	14	20	20	18	22
     # 40	40	40	26	26	18	18	20	20	18	22
     for T_list in product(T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11):
         tic = time.time()
